@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 3.4...3.18)
-project(cmake_example)
+project(interp)
+
+find_package(Python3 REQUIRED Interpreter Development)
+
+if(NOT Python3_FOUND)
+    message(FATAL_ERROR "Python3 libs Not found")
+endif()
 
 add_subdirectory(pybind11)
-pybind11_add_module(cmake_example src/main.cpp)
 
-# EXAMPLE_VERSION_INFO is defined by setup.py and passed into the C++ code as a
-# define (VERSION_INFO) here.
-target_compile_definitions(cmake_example
-                           PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
+add_executable(interp src/main.cpp)
+target_link_libraries(interp PRIVATE pybind11::embed ${PYTHON_LIBRARIES})
+target_include_directories(interp PRIVATE ${PYTHON_INCLUDE_DIRS})
